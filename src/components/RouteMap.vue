@@ -1,40 +1,40 @@
 <template>
-  <div class="row map">
-    <l-map :zoom="zoom" :center="center">
-      <l-tile-layer :url="baseLayer.url" :attribution="baseLayer.attribution"></l-tile-layer>
-      <l-wms-tile-layer
-        :key="wmsLayer.name"
-        :base-url="wmsLayer.url"
-        :layers="wmsLayer.layers"
-        :visible="wmsLayer.visible"
-        :name="wmsLayer.name"
-        :attribution="wmsLayer.attribution"
-        :transparent="true"
-        format="image/png"
-        layer-type="base"
-      >
-      </l-wms-tile-layer>
-    </l-map>
-  </div>
+  <l-map class="map" :zoom="zoom" :center="center">
+    <l-tile-layer
+      :url="baseLayer.url"
+      :attribution="baseLayer.attribution"
+    ></l-tile-layer>
+    <l-wms-tile-layer
+      :key="wmsLayer.name"
+      :base-url="wmsLayer.url"
+      :layers="wmsLayer.layers"
+      :visible="wmsLayer.visible"
+      :name="wmsLayer.name"
+      :attribution="wmsLayer.attribution"
+      :transparent="true"
+      format="image/png"
+      layer-type="base"
+    >
+    </l-wms-tile-layer>
+  </l-map>
 </template>
 
 <script>
-import L from "leaflet";
 import { LMap, LTileLayer, LWMSTileLayer } from "vue2-leaflet";
 
 export default {
   name: "RouteMap",
   props: {
-      route: {
-          type: String,
-          required: false,
-          default: "cite:highways_croatia"
-      }
+    route: {
+      type: String,
+      required: false,
+      default: "cite:highways_croatia",
+    },
   },
   data() {
     return {
       zoom: 7,
-      center: [45.1, 15.2],
+      center: [45.1, 16.25],
       baseLayer: {
         url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         attribution:
@@ -47,8 +47,7 @@ export default {
         format: "image/png",
         layers: "cite:highways_croatia",
         transparent: true,
-        attribution:
-          '',
+        attribution: "",
       },
     };
   },
@@ -58,22 +57,18 @@ export default {
     "l-wms-tile-layer": LWMSTileLayer,
   },
 
-  methods: {
-    latLng: function (lat, lng) {
-      return L.latLng(lat, lng);
+  methods: {},
+  watch: {
+    route: function (newRoute) {
+      this.wmsLayer.layers = newRoute["value"];
+      this.wmsLayer.name = newRoute["value"];
     },
   },
-  watch:{
-      route: function(newRoute){
-          this.wmsLayer.layers = newRoute;
-          this.wmsLayer.name = newRoute;
-      }
-  }
 };
 </script>
 
 <style scoped>
 .map {
-  height: 95vh;
+  height: 90vh;
 }
 </style>

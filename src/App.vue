@@ -5,14 +5,14 @@
 </template>
 
 <script>
-import OptimalRoute from './components/OptimalRoute.vue'
+import OptimalRoute from "./components/OptimalRoute.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    OptimalRoute
-  }
-}
+    OptimalRoute,
+  },
+};
 </script>
 
 <style>
