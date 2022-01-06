@@ -1,5 +1,5 @@
 <template>
-  <l-map class="map" :zoom="zoom" :center="center">
+  <l-map class="map" :zoom="zoom" :center="center" v-on:click="test">
     <l-tile-layer
       :url="baseLayer.url"
       :attribution="baseLayer.attribution"
@@ -16,11 +16,12 @@
       layer-type="base"
     >
     </l-wms-tile-layer>
+    <l-geo-json :key="geojsonName" :geojson="geojson"></l-geo-json>
   </l-map>
 </template>
 
 <script>
-import { LMap, LTileLayer, LWMSTileLayer } from "vue2-leaflet";
+import { LMap, LTileLayer, LWMSTileLayer, LGeoJson } from "vue2-leaflet";
 
 export default {
   name: "RouteMap",
@@ -33,6 +34,9 @@ export default {
   },
   data() {
     return {
+      geojson_temp: "http://localhost:8080/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&outputFormat=application/json&typeNames=",
+      geojson: null,
+      geojsonName: "name",
       zoom: 7,
       center: [45.1, 16.25],
       baseLayer: {
@@ -55,15 +59,34 @@ export default {
     LMap,
     LTileLayer,
     "l-wms-tile-layer": LWMSTileLayer,
+    LGeoJson,
   },
 
-  methods: {},
-  watch: {
-    route: function (newRoute) {
-      this.wmsLayer.layers = newRoute["value"];
-      this.wmsLayer.name = newRoute["value"];
+  methods: {
+    test: function(event){
+      console.log(event);
     },
   },
+  watch: {
+    route: async function (newRoute) {
+      this.wmsLayer.layers = newRoute["value"];
+      this.wmsLayer.name = newRoute["value"];
+      
+      this.geojsonName = newRoute["value"] + "-restareas"
+      console.log(this.geojsonName)
+      var link = this.geojson_temp + this.geojsonName;
+      const response = await fetch(link);
+      this.geojson = await response.json();
+    },
+  },
+  // async created() {
+  //   // var link = this.geojson_temp + newRoute["value"] + "-restareas";
+  //   const response = await fetch(
+  //     "http://localhost:8080/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&outputFormat=application/json&typeNames=cite:Rijeka-Osijek-restareas"
+  //   );
+  //   this.geojson = await response.json();
+  //   console.log(this.geojson);
+  // },
 };
 </script>
 
