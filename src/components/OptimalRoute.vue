@@ -14,6 +14,7 @@
         placeholder="Select a route"
       ></multiselect>
       <rest-areas-table></rest-areas-table>
+      <configuration-form></configuration-form>
     </div>
   </div>
 </template>
@@ -21,9 +22,10 @@
 <script>
 import RouteMap from "./RouteMap.vue";
 import RestAreasTable from "./RestAreasTable.vue"
+import ConfigurationForm from "./ConfigurationForm.vue"
 
 export default {
-  components: { RouteMap , RestAreasTable},
+  components: { RouteMap , RestAreasTable, ConfigurationForm},
   name: "OptimalRoute",
   mounted() {
     this.route = "cite:highways_croatia";

@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-4">
+  <div class="container mt-3">
     <h3 class="label label-primary">Rest areas for {{ routeName }}</h3>
     <table class="table table-striped table-bordered">
       <thead>
