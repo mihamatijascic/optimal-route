@@ -67,9 +67,9 @@ export default {
       LPopup
       console.log(event["propagatedFrom"]["feature"]["properties"]["name"]);
     },
-    sendRestAreas: function(restAreas){
+    sendRestAreas: function(restAreas, routeName){
       console.log("send rest areas");
-      this.$root.$emit('send_rest_areas', restAreas);
+      this.$root.$emit('send_rest_areas', restAreas, routeName);
     }
   },
   watch: {
@@ -83,7 +83,7 @@ export default {
       var fullGeojson = await response.json();
       this.geojson = fullGeojson["features"];
       console.log(this.geojson);
-      this.sendRestAreas(this.geojson);
+      this.sendRestAreas(this.geojson, newRoute["name"]);
     },
   },
 };
