@@ -16,12 +16,12 @@
       layer-type="base"
     >
     </l-wms-tile-layer>
-    <l-geo-json :key="geojsonName" :geojson="geojson"></l-geo-json>
+    <l-geo-json :key="geojsonName" :geojson="geojson" @click="test"></l-geo-json>
   </l-map>
 </template>
 
 <script>
-import { LMap, LTileLayer, LWMSTileLayer, LGeoJson } from "vue2-leaflet";
+import { LMap, LTileLayer, LWMSTileLayer, LGeoJson, LPopup } from "vue2-leaflet";
 
 export default {
   name: "RouteMap",
@@ -64,29 +64,28 @@ export default {
 
   methods: {
     test: function(event){
-      console.log(event);
+      LPopup
+      console.log(event["propagatedFrom"]["feature"]["properties"]["name"]);
     },
+    sendRestAreas: function(restAreas){
+      console.log("send rest areas");
+      this.$root.$emit('send_rest_areas', restAreas);
+    }
   },
   watch: {
     route: async function (newRoute) {
       this.wmsLayer.layers = newRoute["value"];
       this.wmsLayer.name = newRoute["value"];
-      
+
       this.geojsonName = newRoute["value"] + "-restareas"
-      console.log(this.geojsonName)
       var link = this.geojson_temp + this.geojsonName;
       const response = await fetch(link);
-      this.geojson = await response.json();
+      var fullGeojson = await response.json();
+      this.geojson = fullGeojson["features"];
+      console.log(this.geojson);
+      this.sendRestAreas(this.geojson);
     },
   },
-  // async created() {
-  //   // var link = this.geojson_temp + newRoute["value"] + "-restareas";
-  //   const response = await fetch(
-  //     "http://localhost:8080/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&outputFormat=application/json&typeNames=cite:Rijeka-Osijek-restareas"
-  //   );
-  //   this.geojson = await response.json();
-  //   console.log(this.geojson);
-  // },
 };
 </script>
 

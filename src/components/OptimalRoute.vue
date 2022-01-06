@@ -13,15 +13,17 @@
         allow-empty
         placeholder="Select a route"
       ></multiselect>
+      <rest-areas-table></rest-areas-table>
     </div>
   </div>
 </template>
 
 <script>
 import RouteMap from "./RouteMap.vue";
+import RestAreasTable from "./RestAreasTable.vue"
 
 export default {
-  components: { RouteMap },
+  components: { RouteMap , RestAreasTable},
   name: "OptimalRoute",
   mounted() {
     this.route = "cite:highways_croatia";
