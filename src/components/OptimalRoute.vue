@@ -1,18 +1,21 @@
 <template>
-  <div class="grid-container">
+  <div class="grid-container m-5">
     <div class="map">
       <RouteMap :route="route" />
     </div>
-    <div class="dropdown">
-      <multiselect
-        v-model="route"
-        :options="routes"
-        searchable
-        track-by="name"
-        label="name"
-        allow-empty
-        placeholder="Select a route"
-      ></multiselect>
+    <div class="relations dropdown">
+      <div class="container my-2">
+        <h5>Relations:</h5>
+        <multiselect
+          v-model="route"
+          :options="routes"
+          searchable
+          track-by="name"
+          label="name"
+          allow-empty
+          placeholder="Select a route"
+        ></multiselect>
+      </div>
       <rest-areas-table></rest-areas-table>
       <configuration-form></configuration-form>
     </div>
@@ -21,11 +24,11 @@
 
 <script>
 import RouteMap from "./RouteMap.vue";
-import RestAreasTable from "./RestAreasTable.vue"
-import ConfigurationForm from "./ConfigurationForm.vue"
+import RestAreasTable from "./RestAreasTable.vue";
+import ConfigurationForm from "./ConfigurationForm.vue";
 
 export default {
-  components: { RouteMap , RestAreasTable, ConfigurationForm},
+  components: { RouteMap, RestAreasTable, ConfigurationForm },
   name: "OptimalRoute",
   mounted() {
     this.route = "cite:highways_croatia";
@@ -49,6 +52,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.relations {
+  text-align: left;
+}
 .grid-container {
   display: grid;
   justify-content: start;

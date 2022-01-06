@@ -12,6 +12,7 @@
     "leaflet": "^1.7.1",
     "vue": "^2.6.11",
     "vue-multiselect": "^2.1.6",
+    "vue-slider-component": "^3.2.15",
     "vue2-leaflet": "^2.7.1"
   },
   "devDependencies": {

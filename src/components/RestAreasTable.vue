@@ -1,6 +1,6 @@
 <template>
-  <div class="container mt-3">
-    <h3 class="label label-primary">Rest areas for {{ routeName }}</h3>
+  <div class="container my-2">
+    <h5>Rest areas for {{ routeName }}</h5>
     <table class="table table-striped table-bordered">
       <thead>
         <tr>
@@ -38,8 +38,11 @@ export default {
 </script>
 
 <style scoped>
-.container{
-    max-height: 500px;
-    overflow: auto;
+.rest_area {
+  text-align: left;
+}
+.container {
+  max-height: 300px;
+  overflow-y: scroll;
 }
 </style>
