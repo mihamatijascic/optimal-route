@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    <table class="">
+  <div class="container mt-4">
+    <table class="table table-striped table-bordered">
         <thead>
             <tr>
                 <th>Index</th>
@@ -34,4 +34,6 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>
