@@ -38,9 +38,6 @@ export default {
 </script>
 
 <style scoped>
-.rest_area {
-  text-align: left;
-}
 .container {
   max-height: 300px;
   overflow-y: scroll;

@@ -1,21 +1,49 @@
 <template>
-  <div class="container my-2">
+  <div class="container my-4">
     <div class="my-2">
-      <h5>Electric vehicles:</h5>
+      <h5>Electric vehicle model:</h5>
       <multiselect
         v-model="selectedCar"
         :options="cars"
         searchable
         track-by="name"
-        label="name"
+        :customLabel="customLabelCar"
         allow-empty
         placeholder="Select a car"
+        id="electric"
       ></multiselect>
     </div>
-    <div id="slider" class="my-4">
-      <h5 id="battery">Battery fill percentage:</h5>
-      <vue-slider v-model="bateryStatus" :min="minSlider" :max="maxSlider">
+    <div class="my-2">
+      <h5>Charging station type:</h5>
+      <multiselect
+        v-model="selectedStation"
+        :options="chargingStations"
+        searchable
+        track-by="name"
+        :customLabel="customLabelStation"
+        allow-empty
+        placeholder="Select charging station type"
+        id="electric"
+      ></multiselect>
+    </div>
+    <div class="my-4">
+      <h5>Battery fill percentage: {{ batteryStatus }}%</h5>
+      <vue-slider
+        id="slider"
+        v-model="batteryStatus"
+        :min="minSlider"
+        :max="maxSlider"
+        :contained="sliderContained"
+      >
       </vue-slider>
+    </div>
+    <div class="grid-container my-4">
+      <div class="row">
+        <button type="button" class="col btn btn-secondary btn-lg" v-on:click="calcChargingTime">
+          Calculate charging time
+        </button>
+        <h2 class="col" style="text-align:center;">{{ chargingTime }}</h2>
+      </div>
     </div>
   </div>
 </template>
@@ -31,39 +59,83 @@ export default {
   },
   data() {
     return {
-      bateryStatus: 10,
+      chargingTime: "",
+      sliderContained: false,
+      batteryStatus: 10,
       minSlider: 0,
       maxSlider: 100,
+      selectedStation: null,
       selectedCar: null,
+      chargingStations: null,
       cars: null,
     };
   },
   mounted() {
     this.cars = this.getCars();
     this.selectedCar = this.cars[0];
+    this.chargingStations = this.getStations();
+    this.selectedStation = this.chargingStations[0];
   },
   methods: {
     getCars: function () {
       return [
-        { name: "fiesta", batery: 100 },
-        { name: "punto", batery: 0 },
-        { name: "twingo", batery: 10000 },
+        { name: "Tesla Model S", battery: 100 },
+        { name: "Tesla Model Y", battery: 75 },
+        { name: "Renault Zoe", battery: 52 },
+        { name: "Peugeot e-208", battery: 50 },
+        { name: "Mercedes Concept EQA", battery: 60 },
       ];
     },
+    getStations: function () {
+      return [
+        { name: "Level 1", minPower: 1, maxPower: 3 },
+        { name: "Level 2", minPower: 3, maxPower: 20 },
+        { name: "Level 3 (DCFC)", minPower: 20, maxPower: 50 },
+      ];
+    },
+    customLabelCar: function (car) {
+      return car["name"] + ", battery capacity: " + car["battery"] + " kWh";
+    },
+    customLabelStation: function (station) {
+      return (
+        station["name"] +
+        ", power: " +
+        station["minPower"] +
+        "-" +
+        station["maxPower"] +
+        " kW"
+      );
+    },
+    calcChargingTime: function(){
+      var capacity = this.selectedCar.battery;
+      var minPower = this.selectedStation.minPower;
+      var maxPower = this.selectedStation.maxPower;
+      var capacityToFill = capacity - capacity * (this.batteryStatus/100);
+      var minTime = capacityToFill/maxPower;
+      var maxTime = capacityToFill/minPower;
+      this.chargingTime= minTime.toFixed(2) + "-" + maxTime.toFixed(2) + "h";
+    }
   },
 };
 </script>
 
 <style scoped>
-.row {
-  text-align: left;
-  margin: 5px;
-  z-index: 1000;
+#electric {
+  z-index: 10000;
 }
-#battery {
-  text-align: left;
+.slider {
+  z-index: 1;
 }
-#slider {
+.vue-slider-rail {
+  z-index: 1;
+}
+.vue-slider-dot {
+  z-index: 1;
+}
+.vue-slider-dot-hover {
+  z-index: 1;
+}
+.vue-slider-dot-handle {
   z-index: 1;
 }
 </style>

@@ -5,7 +5,7 @@
     </div>
     <div class="relations dropdown">
       <div class="container my-2">
-        <h5>Relations:</h5>
+        <h5>Relation:</h5>
         <multiselect
           v-model="route"
           :options="routes"
@@ -16,8 +16,8 @@
           placeholder="Select a route"
         ></multiselect>
       </div>
-      <rest-areas-table></rest-areas-table>
       <configuration-form></configuration-form>
+      <rest-areas-table></rest-areas-table>
     </div>
   </div>
 </template>
@@ -54,6 +54,7 @@ export default {
 <style scoped>
 .relations {
   text-align: left;
+  z-index: 1200;
 }
 .grid-container {
   display: grid;
