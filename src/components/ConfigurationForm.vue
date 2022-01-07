@@ -40,7 +40,7 @@
     <div class="grid-container my-4">
       <div class="row">
         <button type="button" class="col btn btn-secondary btn-lg" v-on:click="calcChargingTime">
-          Calculate charging time
+          Charging time
         </button>
         <h2 class="col" style="text-align:center;">{{ chargingTime }}</h2>
       </div>
@@ -113,7 +113,7 @@ export default {
       var capacityToFill = capacity - capacity * (this.batteryStatus/100);
       var minTime = capacityToFill/maxPower;
       var maxTime = capacityToFill/minPower;
-      this.chargingTime= minTime.toFixed(2) + "-" + maxTime.toFixed(2) + "h";
+      this.chargingTime= minTime.toFixed(1) + "-" + maxTime.toFixed(1) + "h";
     }
   },
 };

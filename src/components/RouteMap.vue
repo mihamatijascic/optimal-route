@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { LMap, LTileLayer, LWMSTileLayer, LGeoJson, LPopup } from "vue2-leaflet";
+import { LMap, LTileLayer, LWMSTileLayer, LGeoJson } from "vue2-leaflet";
 
 export default {
   name: "RouteMap",
@@ -64,8 +64,7 @@ export default {
 
   methods: {
     test: function(event){
-      LPopup
-      console.log(event["propagatedFrom"]["feature"]["properties"]["name"]);
+      this.$root.$emit("send_selected_area", event["propagatedFrom"]["feature"]["properties"]);
     },
     sendRestAreas: function(){
       console.log("send rest areas");

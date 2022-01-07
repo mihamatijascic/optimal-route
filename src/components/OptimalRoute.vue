@@ -16,8 +16,8 @@
           placeholder="Select a route"
         ></multiselect>
       </div>
-      <configuration-form></configuration-form>
-      <rest-areas-table></rest-areas-table>
+      <configuration-form/>
+      <rest-areas-table/>
     </div>
   </div>
 </template>
