@@ -16,17 +16,26 @@
       layer-type="base"
     >
     </l-wms-tile-layer>
+    <l-marker :lat-lng="markerLatLng"></l-marker>
     <l-geo-json
       :key="gjRestareasName"
       :geojson="gjRestareas"
       @click="test"
+      :visible="showRestAreas"
     ></l-geo-json>
+    <l-geo-json :key="closestPoint.id" :geojson="closestPoint.stations" />
     <l-geo-json :key="gjRestareasName" :geojson="gjRoute"></l-geo-json>
   </l-map>
 </template>
 
 <script>
-import { LMap, LTileLayer, LWMSTileLayer, LGeoJson } from "vue2-leaflet";
+import {
+  LMap,
+  LTileLayer,
+  LWMSTileLayer,
+  LGeoJson,
+  LMarker,
+} from "vue2-leaflet";
 
 export default {
   name: "RouteMap",
@@ -37,8 +46,18 @@ export default {
       default: "cite:highways_croatia",
     },
   },
+  components: {
+    LMap,
+    LTileLayer,
+    "l-wms-tile-layer": LWMSTileLayer,
+    LGeoJson,
+    LMarker,
+  },
   data() {
     return {
+      closestPoint: { id: 0, stations: null },
+      showRestAreas: true,
+      markerLatLng: [47.31322, -1.319482],
       totalRouteLength: 0,
       gjRoute: null,
       geojson_temp:
@@ -63,14 +82,67 @@ export default {
       },
     };
   },
-  components: {
-    LMap,
-    LTileLayer,
-    "l-wms-tile-layer": LWMSTileLayer,
-    LGeoJson,
-  },
+  mounted() {
+    this.$root.$on(
+      "send_carRemainingDistance",
+      (remaningDistance, maxRange) => {
+        var totalLength = 0;
+        var linePoints = this.gjRoute.features[0].geometry.coordinates[0];
+        var lastClosestPoint = this.calcClosestPoint(linePoints[0][0], linePoints[0][1]);
+        var optimalChargingStationPositions = [];
 
+        for (var i = 0; i < linePoints.length - 1; i++) {
+          var lon1 = linePoints[i][0];
+          var lat1 = linePoints[i][1];
+          var lon2 = linePoints[i + 1][0];
+          var lat2 = linePoints[i + 1][1];
+
+          totalLength += this.getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2);
+
+          if (totalLength > remaningDistance) {
+            optimalChargingStationPositions.push(lastClosestPoint);
+            remaningDistance += maxRange;
+          }
+
+          var closestPointForCurrentPoint = this.calcClosestPoint(lon2, lat2);
+          if (closestPointForCurrentPoint == null) continue;
+
+          lastClosestPoint = closestPointForCurrentPoint;
+        }
+
+        this.totalRouteLength = totalLength;
+        this.closestPoint = {
+          id: this.closestPoint.id + 1,
+          stations: optimalChargingStationPositions,
+        };
+        console.log(optimalChargingStationPositions);
+        this.showRestAreas = false;
+      }
+    );
+  },
   methods: {
+    calcClosestPoint(lon, lat) {
+      var minDistance = 100000000;
+      var minPoint = null;
+      const radius = 5;
+
+      for (var point of this.gjRestareas) {
+        var pointLon = point.geometry.coordinates[0];
+        var pointLat = point.geometry.coordinates[1];
+        var distance = this.getDistanceFromLatLonInKm(
+          lat,
+          lon,
+          pointLat,
+          pointLon
+        );
+
+        if (distance < minDistance && distance < radius) {
+          minDistance = distance;
+          minPoint = point;
+        }
+      }
+      return minPoint;
+    },
     test: function (event) {
       this.$root.$emit(
         "send_selected_area",
@@ -95,14 +167,14 @@ export default {
       var d = R * c; // Distance in km
       return d;
     },
-    calculateTotalLength: function() {
+    calculateTotalLength: function () {
       var totalLength = 0;
-      var coordinatesArray = this.gjRoute.features[0].geometry.coordinates[0];
-      for (var i = 0; i < coordinatesArray.length - 1; i++) {
-        var lon1 = coordinatesArray[i][0];
-        var lat1 = coordinatesArray[i][1];
-        var lon2 = coordinatesArray[i + 1][0];
-        var lat2 = coordinatesArray[i + 1][1];
+      var linePoints = this.gjRoute.features[0].geometry.coordinates[0];
+      for (var i = 0; i < linePoints.length - 1; i++) {
+        var lon1 = linePoints[i][0];
+        var lat1 = linePoints[i][1];
+        var lon2 = linePoints[i + 1][0];
+        var lat2 = linePoints[i + 1][1];
 
         totalLength += this.getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2);
       }
@@ -112,18 +184,21 @@ export default {
     deg2rad(deg) {
       return deg * (Math.PI / 180);
     },
-    async fetchWfsRestareas(newRoute){
+    async fetchWfsRestareas(newRoute) {
       this.gjRestareasName = newRoute["value"] + "-restareas";
       var link = this.geojson_temp + this.gjRestareasName;
       const response = await fetch(link);
       var fullGeojson = await response.json();
       this.gjRestareas = fullGeojson["features"];
+      this.showRestAreas = true;
+      this.closestPoint.stations = [];
+      this.closestPoint.id += 1;
     },
-    async fetchWfsShorthestPath(newRoute){
+    async fetchWfsShorthestPath(newRoute) {
       var wfsPath = this.geojson_temp + newRoute["value"];
       var path = await fetch(wfsPath);
       this.gjRoute = await path.json();
-    }
+    },
   },
   watch: {
     route: async function (newRoute) {
@@ -137,6 +212,8 @@ export default {
       this.calculateTotalLength();
 
       await this.fetchWfsRestareas(newRoute);
+      console.log("rest areas:");
+      console.log(this.gjRestareas);
 
       this.sendRestAreas();
     },

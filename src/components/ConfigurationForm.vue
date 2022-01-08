@@ -35,6 +35,7 @@
         :max="maxSlider"
         :contained="sliderContained"
         v-on:change="calcChargingTime"
+        v-on:drag-end="sendCarRemainingDistance"
       >
       </vue-slider>
     </div>
@@ -78,13 +79,17 @@ export default {
     this.selectedStation = this.chargingStations[0];
   },
   methods: {
+    sendCarRemainingDistance: function(){
+      var remaningDistance = this.selectedCar.range * (this.batteryStatus/100);
+      this.$root.$emit("send_carRemainingDistance", remaningDistance, this.selectedCar.range);
+    },
     getCars: function () {
       return [
-        { name: "Tesla Model S", battery: 100 },
-        { name: "Tesla Model Y", battery: 75 },
-        { name: "Renault Zoe", battery: 52 },
-        { name: "Peugeot e-208", battery: 50 },
-        { name: "Mercedes Concept EQA", battery: 60 },
+        { name: "Tesla Model S", battery: 100, range: 637},
+        { name: "Tesla Model Y", battery: 75, range: 507},
+        { name: "Renault Zoe", battery: 52, range: 395},
+        { name: "Peugeot e-208", battery: 50, range: 275 },
+        { name: "Mercedes Concept EQA", battery: 60, range: 400 },
       ];
     },
     getStations: function () {
