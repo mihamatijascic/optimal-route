@@ -17,7 +17,6 @@
         </tbody>
       </table>
     </div>
-    <h5>Selected rest area: {{ this.selectedArea }}</h5>
   </div>
 </template>
 

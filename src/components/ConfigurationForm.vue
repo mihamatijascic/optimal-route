@@ -13,7 +13,7 @@
         id="electric"
       ></multiselect>
     </div>
-    <div class="my-2">
+    <div class="my-4">
       <h5>Charging station type:</h5>
       <multiselect
         v-model="selectedStation"
@@ -35,17 +35,22 @@
         :max="maxSlider"
         :contained="sliderContained"
         v-on:change="calcChargingTime"
-        v-on:drag-end="sendCarRemainingDistance"
       >
       </vue-slider>
     </div>
     <div class="grid-container my-4">
       <div class="row">
-        <h2 class="col btn btn-secondary btn-lg">
+        <h2 class="col btn btn-secondary btn-lg" style="vertical-align: middle;">
           Charging time:
         </h2>
-        <h2 class="col" style="text-align:center;">{{ chargingTime }}</h2>
+        <h4 class="col" style="text-align:center;">{{ chargingTime }}</h4>
       </div>
+    </div>
+    <div class="form-floating my-4">
+      <button type="button" class="btn btn-primary btn-success btn-lg" style="display: block;width: 100%;"
+      v-on:click="sendCarRemainingDistance">
+        Optimize
+        </button>
     </div>
   </div>
 </template>
@@ -128,6 +133,7 @@ export default {
 <style scoped>
 #electric {
   z-index: 10000;
+  vertical-align: middle;
 }
 .slider {
   z-index: 1;

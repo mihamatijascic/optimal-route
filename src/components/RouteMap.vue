@@ -90,6 +90,7 @@ export default {
         var linePoints = this.gjRoute.features[0].geometry.coordinates[0];
         var lastClosestPoint = this.calcClosestPoint(linePoints[0][0], linePoints[0][1]);
         var optimalChargingStationPositions = [];
+        var totalLengthOfLastClosestStation = 0;
 
         for (var i = 0; i < linePoints.length - 1; i++) {
           var lon1 = linePoints[i][0];
@@ -97,17 +98,20 @@ export default {
           var lon2 = linePoints[i + 1][0];
           var lat2 = linePoints[i + 1][1];
 
-          totalLength += this.getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2);
+          var step = this.getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2);
+          totalLengthOfLastClosestStation += step;
+          totalLength += step;
 
           if (totalLength > remaningDistance) {
             optimalChargingStationPositions.push(lastClosestPoint);
-            remaningDistance += maxRange;
+            remaningDistance += maxRange - totalLengthOfLastClosestStation;
           }
 
           var closestPointForCurrentPoint = this.calcClosestPoint(lon2, lat2);
           if (closestPointForCurrentPoint == null) continue;
 
           lastClosestPoint = closestPointForCurrentPoint;
+          totalLengthOfLastClosestStation = 0;
         }
 
         this.totalRouteLength = totalLength;
@@ -124,7 +128,7 @@ export default {
     calcClosestPoint(lon, lat) {
       var minDistance = 100000000;
       var minPoint = null;
-      const radius = 5;
+      const radius = 1;
 
       for (var point of this.gjRestareas) {
         var pointLon = point.geometry.coordinates[0];
