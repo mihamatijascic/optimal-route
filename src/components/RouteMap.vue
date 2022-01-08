@@ -16,7 +16,12 @@
       layer-type="base"
     >
     </l-wms-tile-layer>
-    <l-geo-json :key="geojsonName" :geojson="geojson" @click="test"></l-geo-json>
+    <l-geo-json
+      :key="gjRestareasName"
+      :geojson="gjRestareas"
+      @click="test"
+    ></l-geo-json>
+    <l-geo-json :key="gjRestareasName" :geojson="gjRoute"></l-geo-json>
   </l-map>
 </template>
 
@@ -34,9 +39,12 @@ export default {
   },
   data() {
     return {
-      geojson_temp: "http://localhost:8080/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&outputFormat=application/json&typeNames=",
-      geojson: null,
-      geojsonName: "name",
+      totalRouteLength: 0,
+      gjRoute: null,
+      geojson_temp:
+        "http://localhost:8080/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&outputFormat=application/json&typeNames=",
+      gjRestareas: null,
+      gjRestareasName: "name",
       zoom: 7,
       center: [45.1, 16.25],
       baseLayer: {
@@ -47,7 +55,7 @@ export default {
       wmsLayer: {
         url: "http://localhost:8080/geoserver/wms",
         name: "cite:highways_croatia",
-        visible: true,
+        visible: false,
         format: "image/png",
         layers: "cite:highways_croatia",
         transparent: true,
@@ -63,25 +71,73 @@ export default {
   },
 
   methods: {
-    test: function(event){
-      this.$root.$emit("send_selected_area", event["propagatedFrom"]["feature"]["properties"]);
+    test: function (event) {
+      this.$root.$emit(
+        "send_selected_area",
+        event["propagatedFrom"]["feature"]["properties"]
+      );
     },
-    sendRestAreas: function(){
+    sendRestAreas: function () {
       console.log("send rest areas");
-      this.$root.$emit('send_rest_areas', this.geojson, this.route["name"]);
+      this.$root.$emit("send_rest_areas", this.gjRestareas, this.route["name"]);
     },
+    getDistanceFromLatLonInKm: function (lat1, lon1, lat2, lon2) {
+      var R = 6371; // Radius of the earth in km
+      var dLat = this.deg2rad(lat2 - lat1); // deg2rad below
+      var dLon = this.deg2rad(lon2 - lon1);
+      var a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(this.deg2rad(lat1)) *
+          Math.cos(this.deg2rad(lat2)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      var d = R * c; // Distance in km
+      return d;
+    },
+    calculateTotalLength: function() {
+      var totalLength = 0;
+      var coordinatesArray = this.gjRoute.features[0].geometry.coordinates[0];
+      for (var i = 0; i < coordinatesArray.length - 1; i++) {
+        var lon1 = coordinatesArray[i][0];
+        var lat1 = coordinatesArray[i][1];
+        var lon2 = coordinatesArray[i + 1][0];
+        var lat2 = coordinatesArray[i + 1][1];
+
+        totalLength += this.getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2);
+      }
+      this.totalRouteLength = totalLength;
+      console.log("total distance: " + totalLength.toFixed(3));
+    },
+    deg2rad(deg) {
+      return deg * (Math.PI / 180);
+    },
+    async fetchWfsRestareas(newRoute){
+      this.gjRestareasName = newRoute["value"] + "-restareas";
+      var link = this.geojson_temp + this.gjRestareasName;
+      const response = await fetch(link);
+      var fullGeojson = await response.json();
+      this.gjRestareas = fullGeojson["features"];
+    },
+    async fetchWfsShorthestPath(newRoute){
+      var wfsPath = this.geojson_temp + newRoute["value"];
+      var path = await fetch(wfsPath);
+      this.gjRoute = await path.json();
+    }
   },
   watch: {
     route: async function (newRoute) {
       this.wmsLayer.layers = newRoute["value"];
       this.wmsLayer.name = newRoute["value"];
 
-      this.geojsonName = newRoute["value"] + "-restareas"
-      var link = this.geojson_temp + this.geojsonName;
-      const response = await fetch(link);
-      var fullGeojson = await response.json();
-      this.geojson = fullGeojson["features"];
-      console.log(this.geojson);
+      await this.fetchWfsShorthestPath(newRoute);
+
+      console.log("shorthest path:");
+      console.log(this.gjRoute);
+      this.calculateTotalLength();
+
+      await this.fetchWfsRestareas(newRoute);
+
       this.sendRestAreas();
     },
   },

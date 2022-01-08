@@ -53,6 +53,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .relations {
+  height: 90vh;
+  overflow-y: scroll;
   text-align: left;
   z-index: 1200;
 }

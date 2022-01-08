@@ -26,7 +26,7 @@
         id="electric"
       ></multiselect>
     </div>
-    <div class="my-4">
+    <div class="form-floating my-4">
       <h5>Battery fill percentage: {{ batteryStatus }}%</h5>
       <vue-slider
         id="slider"
@@ -34,14 +34,15 @@
         :min="minSlider"
         :max="maxSlider"
         :contained="sliderContained"
+        v-on:change="calcChargingTime"
       >
       </vue-slider>
     </div>
     <div class="grid-container my-4">
       <div class="row">
-        <button type="button" class="col btn btn-secondary btn-lg" v-on:click="calcChargingTime">
-          Charging time
-        </button>
+        <h2 class="col btn btn-secondary btn-lg">
+          Charging time:
+        </h2>
         <h2 class="col" style="text-align:center;">{{ chargingTime }}</h2>
       </div>
     </div>
@@ -113,7 +114,7 @@ export default {
       var capacityToFill = capacity - capacity * (this.batteryStatus/100);
       var minTime = capacityToFill/maxPower;
       var maxTime = capacityToFill/minPower;
-      this.chargingTime= minTime.toFixed(1) + "-" + maxTime.toFixed(1) + "h";
+      this.chargingTime= minTime.toFixed(1) + " - " + maxTime.toFixed(1) + " hours";
     }
   },
 };

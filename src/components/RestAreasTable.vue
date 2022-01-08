@@ -2,7 +2,7 @@
   <div class="container my-2">
     <h5>Rest areas for: {{ routeName }}</h5>
     <div id="table" class="my-2">
-      <table class="table table-striped table-bordered">
+      <table class="table table-striped table-bordered sticky-header">
         <thead>
           <tr>
             <th>Index</th>
@@ -11,13 +11,13 @@
         </thead>
         <tbody>
           <tr v-for="(rest_area, index) in restAreas" :key="index">
-            <td>{{ index + 1 }}.</td>
+            <td>{{ index + 1 }}</td>
             <td>{{ rest_area.properties.name }}</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <h5>Selected rest area: {{this.selectedArea}}</h5>
+    <h5>Selected rest area: {{ this.selectedArea }}</h5>
   </div>
 </template>
 
@@ -34,7 +34,7 @@ export default {
   mounted() {
     this.$root.$on("send_rest_areas", (rest_areas, route_name) => {
       console.log("rest areas recieved!");
-      
+
       this.restAreas = rest_areas;
       this.routeName = route_name;
     });
@@ -49,5 +49,15 @@ export default {
 #table {
   max-height: 300px;
   overflow-y: scroll;
+}
+.table th {
+  text-align: center;
+}
+.table thead tr th{
+  position: sticky;
+  top: 0;
+}
+.table tr {
+  text-align: center;
 }
 </style>
