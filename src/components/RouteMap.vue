@@ -4,13 +4,21 @@
       :url="baseLayer.url"
       :attribution="baseLayer.attribution"
     ></l-tile-layer>
-    <l-marker :lat-lng="markerLatLng"></l-marker>
-    <l-geo-json
+    <l-marker :lat-lng="markerLatLng" :icon="icons.restAreaIcon"> </l-marker>
+    <l-marker
+      v-for="(item,index) in latLngRestAreas"
+      :key="'marker-'+index"
+      :lat-lng="item.coordinates"
+      :visible="showRestAreas"
+      :icon="item.icon"
+    >
+    </l-marker>
+    <!-- <l-geo-json
       :key="gjRestareasName"
       :geojson="gjRestareas"
       @click="onMapClick"
       :visible="showRestAreas"
-    ></l-geo-json>
+    ></l-geo-json> -->
     <l-geo-json :key="closestStation.id" :geojson="closestStation.stations" />
     <l-geo-json :key="gjRestareasName" :geojson="gjRoute"></l-geo-json>
   </l-map>
@@ -18,14 +26,15 @@
 
 <script>
 import { LMap, LTileLayer, LGeoJson, LMarker } from "vue2-leaflet";
+import L from "leaflet";
 
 export default {
   name: "RouteMap",
   props: {
     route: {
-      type: String,
+      type: Object,
       required: false,
-      default: "cite:highways_croatia",
+      default: null,
     },
     optimize: {
       type: Boolean,
@@ -49,9 +58,27 @@ export default {
       geojson_temp:
         "http://localhost:8080/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&outputFormat=application/json&typeNames=",
       gjRestareas: null,
+      latLngRestAreas: null,
       gjRestareasName: "name",
       zoom: 7,
       center: [45.1, 16.25],
+      icons: {
+        restAreaIcon: L.icon({
+          iconUrl: require("@/assets/icons8-coffee-50.png"),
+          iconSize: [32, 37],
+          iconAnchor: [16, 37],
+        }),
+        fuelIcon: L.icon({
+          iconUrl: require("@/assets/icons8-fuel-64.png"),
+          iconSize: [32, 37],
+          iconAnchor: [16, 37],
+        }),
+        parkingIcon: L.icon({
+          iconUrl: require("@/assets/icons8-parking-48.png"),
+          iconSize: [32, 37],
+          iconAnchor: [16, 37],
+        })
+      },
       baseLayer: {
         url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         attribution:
@@ -153,12 +180,41 @@ export default {
     deg2rad(deg) {
       return deg * (Math.PI / 180);
     },
+    conditionalIcon(element){
+      if(element.properties.amenity == "parking"){
+        return this.icons.parkingIcon;
+      }else if(element.properties.highway == "passing_place" || element.properties.highway == "rest_area"){
+        return this.icons.restAreaIcon;
+      }else{
+        return this.icons.fuelIcon;
+      }
+    },
+    createLngLatRestAreas(){
+      this.latLngRestAreas = []
+      console.log("before new loc");
+
+      this.gjRestareas.forEach(element => {
+        var lon = element.geometry.coordinates[0];
+        var lat = element.geometry.coordinates[1];
+        var latLng = {
+          name: element.properties.name,
+          coordinates: L.latLng(lat,lon),
+          visible: true,
+          icon: this.conditionalIcon(element)
+        }
+        this.latLngRestAreas.push(latLng);
+      });
+
+      console.log(this.latLngRestAreas);
+    },
     async fetchWfsRestareas(newRoute) {
       this.gjRestareasName = newRoute["value"] + "-restareas";
       var link = this.geojson_temp + this.gjRestareasName;
       const response = await fetch(link);
       var fullGeojson = await response.json();
       this.gjRestareas = fullGeojson["features"];
+
+      this.createLngLatRestAreas();
     },
     async fetchWfsShorthestPath(newRoute) {
       var wfsPath = this.geojson_temp + newRoute["value"];
