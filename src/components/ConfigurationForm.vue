@@ -105,7 +105,7 @@ export default {
       ];
     },
     customLabelCar: function (car) {
-      return car["name"] + ", battery capacity: " + car["battery"] + " kWh";
+      return car.name + ", battery capacity: " + car.battery + " kWh, range: " + car.range + " km";
     },
     customLabelStation: function (station) {
       return (
