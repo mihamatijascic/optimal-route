@@ -11,7 +11,7 @@
           :options="routes"
           searchable
           track-by="name"
-          label="name"
+          :customLabel="customLabelRoute"
           allow-empty
           placeholder="Select a route"
         ></multiselect>
@@ -31,21 +31,25 @@ export default {
   components: { RouteMap, RestAreasTable, ConfigurationForm },
   name: "OptimalRoute",
   mounted() {
-    this.route = "cite:highways_croatia";
+    this.route = null;
   },
   data() {
     return {
       routes: [
-        { name: "Croatia highways", value: "cite:highways_croatia" },
-        { name: "Zagreb-Split", value: "cite:Zagreb-Split" },
-        { name: "Zagreb-Rijeka", value: "cite:Zagreb-Rijeka" },
-        { name: "Zagreb-Osijek", value: "cite:Zagreb-Osijek" },
-        { name: "Split-Rijeka", value: "cite:Split-Rijeka" },
-        { name: "Split-Osijek", value: "cite:Split-Osijek" },
-        { name: "Rijeka-Osijek", value: "cite:Rijeka-Osijek" },
+        { name: "Zagreb-Split", value: "cite:Zagreb-Split",  distance: 410},
+        { name: "Zagreb-Rijeka", value: "cite:Zagreb-Rijeka" , distance: 162},
+        { name: "Zagreb-Osijek", value: "cite:Zagreb-Osijek" , distance: 284},
+        { name: "Split-Rijeka", value: "cite:Split-Rijeka", distance: 416 },
+        { name: "Split-Osijek", value: "cite:Split-Osijek", distance: 690 },
+        { name: "Rijeka-Osijek", value: "cite:Rijeka-Osijek", distance: 445},
       ],
       route: null,
     };
+  },
+  methods:{
+    customLabelRoute(selectedRoute){
+      return selectedRoute.name + ", distance: " + selectedRoute.distance + " km";
+    }
   },
 };
 </script>
