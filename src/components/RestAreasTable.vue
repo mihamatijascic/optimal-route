@@ -1,22 +1,21 @@
 <template>
-  <div class="container my-2">
+  <div class="container">
     <h5>Rest areas for: {{ routeName }}</h5>
-    <div id="table" class="my-2">
-      <table class="table table-striped table-bordered sticky-header">
-        <thead>
-          <tr>
-            <th>Index</th>
-            <th>Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(rest_area, index) in restAreas" :key="index">
-            <td>{{ index + 1 }}</td>
-            <td>{{ rest_area.properties.name }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <table id="table" class="table table-striped table-bordered sticky-header">
+      <thead>
+        <tr>
+          <th>Index</th>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(rest_area, index) in restAreas" :key="index">
+          <td>{{ index + 1 }}</td>
+          <td>{{ rest_area.properties.name }}</td>
+          <!-- <td>{{ rest_area.name }}</td> -->
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -32,8 +31,6 @@ export default {
   },
   mounted() {
     this.$root.$on("send_rest_areas", (rest_areas, route_name) => {
-      console.log("rest areas recieved!");
-
       this.restAreas = rest_areas;
       this.routeName = route_name;
     });
@@ -47,12 +44,11 @@ export default {
 <style scoped>
 #table {
   max-height: 300px;
-  overflow-y: scroll;
 }
 .table th {
   text-align: center;
 }
-.table thead tr th{
+.table thead tr th {
   position: sticky;
   top: 0;
 }

@@ -6,29 +6,22 @@
     ></l-tile-layer>
     <l-marker :lat-lng="markerLatLng" :icon="icons.restAreaIcon"> </l-marker>
     <l-geo-json :key="gjRestareasName" :geojson="gjRoute"></l-geo-json>
-    <!-- item.icon.options.visible -->
     <l-marker
-      v-for="(item,index) in latLngRestAreas"
-      :key="'marker-'+index"
+      v-for="(item, index) in latLngRestAreas"
+      :key="'marker-' + index"
       :lat-lng="item.coordinates"
       :visible="showRestAreas"
       :icon="item.icon"
       @l-add="$event.target.openPopup()"
     >
-    <l-popup :content="item.name"></l-popup>
+      <l-popup :content="item.name"></l-popup>
     </l-marker>
-    <!-- <l-geo-json
-      :key="gjRestareasName"
-      :geojson="gjRestareas"
-      @click="onMapClick"
-      :visible="showRestAreas"
-    ></l-geo-json> -->
     <l-geo-json :key="closestStation.id" :geojson="closestStation.stations" />
   </l-map>
 </template>
 
 <script>
-import { LMap, LTileLayer, LGeoJson, LMarker, LPopup} from "vue2-leaflet";
+import { LMap, LTileLayer, LGeoJson, LMarker, LPopup } from "vue2-leaflet";
 import L from "leaflet";
 
 export default {
@@ -50,7 +43,7 @@ export default {
     LTileLayer,
     LGeoJson,
     LMarker,
-    LPopup
+    LPopup,
   },
   data() {
     return {
@@ -94,9 +87,7 @@ export default {
     };
   },
   mounted() {
-    this.$root.$on("route_selected", (selectedRoute)=>{
-      console.log("recieved selected route!!");
-      console.log(selectedRoute);
+    this.$root.$on("route_selected", (selectedRoute) => {
       this.route = selectedRoute;
     });
     this.$root.$on(
@@ -172,7 +163,6 @@ export default {
       );
     },
     sendRestAreas: function () {
-      console.log("send rest areas");
       this.$root.$emit("send_rest_areas", this.gjRestareas, this.route["name"]);
     },
     getDistanceFromLatLonInKm: function (lat1, lon1, lat2, lon2) {
@@ -192,32 +182,32 @@ export default {
     deg2rad(deg) {
       return deg * (Math.PI / 180);
     },
-    conditionalIcon(element){
-      if(element.properties.amenity == "parking"){
+    conditionalIcon(element) {
+      if (element.properties.amenity == "parking") {
         return this.icons.parkingIcon;
-      }else if(element.properties.highway == "passing_place" || element.properties.highway == "rest_area"){
+      } else if (
+        element.properties.highway == "passing_place" ||
+        element.properties.highway == "rest_area"
+      ) {
         return this.icons.restAreaIcon;
-      }else{
+      } else {
         return this.icons.fuelIcon;
       }
     },
-    createLngLatRestAreas(){
-      this.latLngRestAreas = []
-      console.log("before new loc");
+    createLngLatRestAreas() {
+      this.latLngRestAreas = [];
 
-      this.gjRestareas.forEach(element => {
+      this.gjRestareas.forEach((element) => {
         var lon = element.geometry.coordinates[0];
         var lat = element.geometry.coordinates[1];
         var latLng = {
           name: element.properties.name,
           properties: element.properties,
-          coordinates: L.latLng(lat,lon),
-          icon: this.conditionalIcon(element)
-        }
+          coordinates: L.latLng(lat, lon),
+          icon: this.conditionalIcon(element),
+        };
         this.latLngRestAreas.push(latLng);
       });
-
-      console.log(this.latLngRestAreas);
     },
     async fetchWfsRestareas(newRoute) {
       this.gjRestareasName = newRoute["value"] + "-restareas";
@@ -238,12 +228,7 @@ export default {
     route: async function (newRoute) {
       await this.fetchWfsShorthestPath(newRoute);
 
-      console.log("shorthest path:");
-      console.log(this.gjRoute);
-
       await this.fetchWfsRestareas(newRoute);
-      console.log("rest areas:");
-      console.log(this.gjRestareas);
 
       this.sendRestAreas();
       this.optimize = false;

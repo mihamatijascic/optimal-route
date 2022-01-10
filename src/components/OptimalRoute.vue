@@ -1,11 +1,11 @@
 <template>
   <div class="grid-container m-5">
     <div class="map">
-      <RouteMap/>
+      <RouteMap />
     </div>
     <div class="relations dropdown">
-      <configuration-form/>
-      <rest-areas-table/>
+      <configuration-form />
+      <rest-areas-table />
     </div>
   </div>
 </template>
@@ -18,16 +18,11 @@ import ConfigurationForm from "./ConfigurationForm.vue";
 export default {
   components: { RouteMap, RestAreasTable, ConfigurationForm },
   name: "OptimalRoute",
-  mounted() {
-    
-  },
+  mounted() {},
   data() {
-    return {
-      
-    };
+    return {};
   },
-  methods:{
-  },
+  methods: {},
 };
 </script>
 
@@ -35,9 +30,7 @@ export default {
 <style scoped>
 .relations {
   height: 90vh;
-  overflow-y: scroll;
   text-align: left;
-  z-index: 1200;
 }
 .grid-container {
   display: grid;
@@ -46,22 +39,3 @@ export default {
   grid-column-gap: 50px;
 }
 </style>
-
-<!-- 
-{ name: "Croatia highways", value: "cite:highways_croatia" },
-{ name: "Zagreb-Split", value: "cite:Zagreb-Split" },
-{ name: "Zagreb-Rijeka", value: "cite:Zagreb-Rijeka" },
-{ name: "Zagreb-Osijek", value: "cite:Zagreb-Osijek" },
-{ name: "Split-Rijeka", value: "cite:Split-Rijeka" },
-{ name: "Split-Osijek", value: "cite:Split-Osijek" },
-{ name: "Rijeka-Osijek", value: "cite:Rijeka-Osijek" },
-
-
-{ name: "Croatia highways", value: "cite:highways_croatia" },
-{ name: "Zagreb-Split", value: "Zagreb-Split-fuel-stations" },
-{ name: "Zagreb-Rijeka", value: "Zagreb-Rijeka-fuel-stations" },
-{ name: "Zagreb-Osijek", value: "Zagreb-Osijek-fuel-stations" },
-{ name: "Split-Rijeka", value: "Split-Rijeka-fuel-stations" },
-{ name: "Split-Osijek", value: "Split-Osijek-fuel-stations" },
-{ name: "Rijeka-Osijek", value: "Rijeka-Osijek-fuel-stations" },
--->
