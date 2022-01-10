@@ -13,7 +13,9 @@
       :lat-lng="item.coordinates"
       :visible="showRestAreas"
       :icon="item.icon"
+      @l-add="$event.target.openPopup()"
     >
+    <l-popup :content="item.name"></l-popup>
     </l-marker>
     <!-- <l-geo-json
       :key="gjRestareasName"
@@ -26,7 +28,7 @@
 </template>
 
 <script>
-import { LMap, LTileLayer, LGeoJson, LMarker } from "vue2-leaflet";
+import { LMap, LTileLayer, LGeoJson, LMarker, LPopup} from "vue2-leaflet";
 import L from "leaflet";
 
 export default {
@@ -48,6 +50,7 @@ export default {
     LTileLayer,
     LGeoJson,
     LMarker,
+    LPopup
   },
   data() {
     return {
@@ -207,6 +210,7 @@ export default {
         var lat = element.geometry.coordinates[1];
         var latLng = {
           name: element.properties.name,
+          properties: element.properties,
           coordinates: L.latLng(lat,lon),
           icon: this.conditionalIcon(element)
         }
