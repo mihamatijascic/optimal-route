@@ -9,7 +9,7 @@
       v-for="(item,index) in latLngRestAreas"
       :key="'marker-'+index"
       :lat-lng="item.coordinates"
-      :visible="showRestAreas"
+      :visible="item.icon.options.visible"
       :icon="item.icon"
     >
     </l-marker>
@@ -67,17 +67,20 @@ export default {
           iconUrl: require("@/assets/icons8-coffee-50.png"),
           iconSize: [32, 37],
           iconAnchor: [16, 37],
+          visible: true,
         }),
         fuelIcon: L.icon({
           iconUrl: require("@/assets/icons8-fuel-64.png"),
           iconSize: [32, 37],
           iconAnchor: [16, 37],
+          visible: true,
         }),
         parkingIcon: L.icon({
           iconUrl: require("@/assets/icons8-parking-48.png"),
           iconSize: [32, 37],
           iconAnchor: [16, 37],
-        })
+          visible: true,
+        }),
       },
       baseLayer: {
         url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -199,7 +202,6 @@ export default {
         var latLng = {
           name: element.properties.name,
           coordinates: L.latLng(lat,lon),
-          visible: true,
           icon: this.conditionalIcon(element)
         }
         this.latLngRestAreas.push(latLng);
