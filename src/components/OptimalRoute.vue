@@ -1,21 +1,9 @@
 <template>
   <div class="grid-container m-5">
     <div class="map">
-      <RouteMap :route="route" />
+      <RouteMap/>
     </div>
     <div class="relations dropdown">
-      <div class="container my-2">
-        <h5>Relation:</h5>
-        <multiselect
-          v-model="route"
-          :options="routes"
-          searchable
-          track-by="name"
-          :customLabel="customLabelRoute"
-          allow-empty
-          placeholder="Select a route"
-        ></multiselect>
-      </div>
       <configuration-form/>
       <rest-areas-table/>
     </div>
@@ -31,25 +19,14 @@ export default {
   components: { RouteMap, RestAreasTable, ConfigurationForm },
   name: "OptimalRoute",
   mounted() {
-    this.route = null;
+    
   },
   data() {
     return {
-      routes: [
-        { name: "Zagreb-Split", value: "cite:Zagreb-Split",  distance: 410},
-        { name: "Zagreb-Rijeka", value: "cite:Zagreb-Rijeka" , distance: 162},
-        { name: "Zagreb-Osijek", value: "cite:Zagreb-Osijek" , distance: 284},
-        { name: "Split-Rijeka", value: "cite:Split-Rijeka", distance: 416 },
-        { name: "Split-Osijek", value: "cite:Split-Osijek", distance: 690 },
-        { name: "Rijeka-Osijek", value: "cite:Rijeka-Osijek", distance: 445},
-      ],
-      route: null,
+      
     };
   },
   methods:{
-    customLabelRoute(selectedRoute){
-      return selectedRoute.name + ", distance: " + selectedRoute.distance + " km";
-    }
   },
 };
 </script>

@@ -5,11 +5,13 @@
       :attribution="baseLayer.attribution"
     ></l-tile-layer>
     <l-marker :lat-lng="markerLatLng" :icon="icons.restAreaIcon"> </l-marker>
+    <l-geo-json :key="gjRestareasName" :geojson="gjRoute"></l-geo-json>
+    <!-- item.icon.options.visible -->
     <l-marker
       v-for="(item,index) in latLngRestAreas"
       :key="'marker-'+index"
       :lat-lng="item.coordinates"
-      :visible="item.icon.options.visible"
+      :visible="showRestAreas"
       :icon="item.icon"
     >
     </l-marker>
@@ -20,7 +22,6 @@
       :visible="showRestAreas"
     ></l-geo-json> -->
     <l-geo-json :key="closestStation.id" :geojson="closestStation.stations" />
-    <l-geo-json :key="gjRestareasName" :geojson="gjRoute"></l-geo-json>
   </l-map>
 </template>
 
@@ -90,6 +91,11 @@ export default {
     };
   },
   mounted() {
+    this.$root.$on("route_selected", (selectedRoute)=>{
+      console.log("recieved selected route!!");
+      console.log(selectedRoute);
+      this.route = selectedRoute;
+    });
     this.$root.$on(
       "send_carRemainingDistance",
       (remaningDistance, maxRange) => {
