@@ -49,11 +49,11 @@ export default {
   max-height: 300px;
   overflow-y: scroll;
 }
-.table th {
+.table thead {
+  position: sticky;
   text-align: center;
 }
 .table thead tr th{
-  position: sticky;
   top: 0;
 }
 .table tr {

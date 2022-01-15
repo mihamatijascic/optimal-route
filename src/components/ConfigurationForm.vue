@@ -193,24 +193,8 @@ export default {
 };
 </script>
 
-<style scoped>
-#electric {
-  z-index: 10000;
-  vertical-align: middle;
-}
-.slider {
-  z-index: 1;
-}
-.vue-slider-rail {
-  z-index: 1;
-}
-.vue-slider-dot {
-  z-index: 1;
-}
-.vue-slider-dot-hover {
-  z-index: 1;
-}
-.vue-slider-dot-handle {
-  z-index: 1;
+<style>
+.multiselect--active {
+  z-index: 10;
 }
 </style>
