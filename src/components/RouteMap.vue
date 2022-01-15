@@ -23,7 +23,7 @@
       @click="onMapClick"
       :visible="showRestAreas"
     ></l-geo-json> -->
-    <l-geo-json :key="closestStation.id" :geojson="closestStation.stations" />
+    <l-geo-json :key="closestStation.id" :geojson="closestStation.stations" ></l-geo-json>
   </l-map>
 </template>
 
@@ -201,11 +201,12 @@ export default {
         return this.icons.fuelIcon;
       }
     },
-    createLngLatRestAreas(){
+    createLngLatArray(gjArray){
       this.latLngRestAreas = []
+      var latLngArray = []
       console.log("before new loc");
 
-      this.gjRestareas.forEach(element => {
+      gjArray.forEach(element => {
         var lon = element.geometry.coordinates[0];
         var lat = element.geometry.coordinates[1];
         var latLng = {
@@ -214,10 +215,11 @@ export default {
           coordinates: L.latLng(lat,lon),
           icon: this.conditionalIcon(element)
         }
-        this.latLngRestAreas.push(latLng);
+        latLngArray.push(latLng);
       });
 
       console.log(this.latLngRestAreas);
+      return latLngArray;
     },
     async fetchWfsRestareas(newRoute) {
       this.gjRestareasName = newRoute["value"] + "-restareas";
@@ -226,7 +228,8 @@ export default {
       var fullGeojson = await response.json();
       this.gjRestareas = fullGeojson["features"];
 
-      this.createLngLatRestAreas();
+      this.latLngRestAreas = this.createLngLatArray(this.gjRestareas);
+      // this.createLngLatRestAreas();
     },
     async fetchWfsShorthestPath(newRoute) {
       var wfsPath = this.geojson_temp + newRoute["value"];
