@@ -1,5 +1,5 @@
 <template>
-  <div class="grid-container m-5">
+  <div class="no-scroll grid-container m-5">
     <div class="map">
       <RouteMap/>
     </div>
@@ -33,9 +33,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.no-scroll{
+  overflow-y: none;
+}
 .relations {
   height: 90vh;
-  overflow-y: scroll;
   text-align: left;
   z-index: 1200;
 }

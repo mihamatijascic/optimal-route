@@ -1,5 +1,5 @@
 <template>
-  <div class="container my-2">
+  <div class="container my-2" v-if="restAreas">
     <h5>Rest areas for: {{ routeName }}</h5>
     <div id="table" class="my-2">
       <table class="table table-striped table-bordered sticky-header">
@@ -46,7 +46,7 @@ export default {
 
 <style scoped>
 #table {
-  max-height: 300px;
+  max-height: 15rem;
   overflow-y: scroll;
 }
 .table thead {
