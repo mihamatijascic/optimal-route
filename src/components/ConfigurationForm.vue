@@ -8,7 +8,7 @@
         searchable
         track-by="name"
         :customLabel="customLabelRoute"
-        allow-empty
+        :allow-empty="true"
         placeholder="Select a route"
         v-on:select="routeSelected"
       ></multiselect>
@@ -21,7 +21,7 @@
         searchable
         track-by="name"
         :customLabel="customLabelCar"
-        allow-empty
+        :allow-empty="true"
         placeholder="Select a car"
         id="electric"
       ></multiselect>
@@ -53,9 +53,7 @@
     </div>
     <div class="grid-container my-4">
       <div class="row">
-        <h2 class="col btn btn-secondary btn-lg" style="vertical-align: middle">
-          Charging time:
-        </h2>
+        <h3 style="vertical-align: middle">Charging time:</h3>
         <h4 class="col" style="text-align: center">{{ chargingTime }}</h4>
       </div>
     </div>
@@ -104,11 +102,11 @@ export default {
   },
   mounted() {
     this.cars = this.getCars();
-    this.selectedCar = this.cars[0];
+    this.selectedCar = undefined;
     this.chargingStations = this.getStations();
-    this.selectedStation = this.chargingStations[0];
+    this.selectedStation = undefined;
     this.routes = this.getRoutes();
-    this.route = "";
+    this.route = undefined;
   },
   methods: {
     sendCarRemainingDistance: function () {
