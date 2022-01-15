@@ -177,7 +177,7 @@ export default {
         selectedRoute.name + ", distance: " + selectedRoute.distance + " km"
       );
     },
-    calcChargingTime: function () {
+    calcChargingTime() {
       var capacity = this.selectedCar.battery;
       var minPower = this.selectedStation.minPower;
       var maxPower = this.selectedStation.maxPower;

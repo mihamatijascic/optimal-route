@@ -23,7 +23,15 @@
       @click="onMapClick"
       :visible="showRestAreas"
     ></l-geo-json> -->
-    <l-geo-json :key="closestStation.id" :geojson="closestStation.stations" ></l-geo-json>
+    <!-- <l-geo-json :key="closestStation.id" :geojson="closestStation.stations" ></l-geo-json> -->
+    <l-marker
+      v-for="(item,index) in this.closestStation.stations"
+      :key="'optimal-'+index"
+      :lat-lng="item.coordinates"
+      @l-add="$event.target.openPopup()"
+    >
+    <l-popup :content="item.name"></l-popup>
+    </l-marker>
   </l-map>
 </template>
 
@@ -133,11 +141,15 @@ export default {
           totalLengthOfLastClosestStation = 0;
         }
 
+        console.log("ater latLng optimal latlng:");
+        console.log(optimalChargingStationPositions);
         this.totalRouteLength = totalLength;
         this.closestStation = {
           id: this.closestStation.id + 1,
-          stations: optimalChargingStationPositions,
+          stations: this.createLngLatArray(optimalChargingStationPositions),
         };
+        console.log("ater latLng optimal latlng:");
+        console.log(this.closestStation.stations);
         this.optimize = true;
       }
     );
