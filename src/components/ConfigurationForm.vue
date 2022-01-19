@@ -112,10 +112,18 @@ export default {
     sendCarRemainingDistance: function () {
       var remaningDistance =
         this.selectedCar.range * (this.batteryStatus / 100);
+        console.log("sending");
+        console.log("max range: " + this.selectedCar.range);
+        console.log("battery: " + this.selectedCar.battery);
+        console.log("minPower: " + this.selectedStation.minPower);
+        console.log("maxPower: " + this.selectedStation.maxPower);
       this.$root.$emit(
         "send_carRemainingDistance",
         remaningDistance,
-        this.selectedCar.range
+        this.selectedCar.range,
+        this.selectedCar.battery,
+        this.selectedStation.minPower,
+        this.selectedStation.maxPower
       );
     },
     routeSelected: function (selectedRoute) {

@@ -15,7 +15,7 @@
       :icon="item.icon"
       @l-add="$event.target.openPopup()"
     >
-    <l-popup :content="item.name"></l-popup>
+    <l-popup :content="item.name"> </l-popup>
     </l-marker>
     <!-- <l-geo-json
       :key="gjRestareasName"
@@ -28,9 +28,10 @@
       v-for="(item,index) in this.closestStation.stations"
       :key="'optimal-'+index"
       :lat-lng="item.coordinates"
+      :icon="item.icon"
       @l-add="$event.target.openPopup()"
     >
-    <l-popup :content="item.name"></l-popup>
+    <l-popup :content="'Charging time: ' + item.chargingTime  + '<br>Station name: ' + item.name"></l-popup>
     </l-marker>
   </l-map>
 </template>
@@ -109,7 +110,8 @@ export default {
     });
     this.$root.$on(
       "send_carRemainingDistance",
-      (remaningDistance, maxRange) => {
+      (remaningDistance, maxRange, battery, minPower, maxPower) => {
+        console.log("remDistance: " + remaningDistance + ", maxRange: " + maxRange + ", battery: " + battery + ", minPower: " + minPower  + ", maxPower: " + maxPower);
         var totalLength = 0;
         var linePoints = this.gjRoute.features[0].geometry.coordinates[0];
         var lastClosestPoint = this.calcClosestPoint(
@@ -130,7 +132,16 @@ export default {
           totalLength += step;
 
           if (totalLength > remaningDistance) {
-            optimalChargingStationPositions.push(lastClosestPoint);
+            var stationMarker = this.createJsonMarker(lastClosestPoint);
+            var batteryToFillPerc = (maxRange - totalLengthOfLastClosestStation)/maxRange;
+            console.log("battery: " + battery);
+            console.log("battery to fill: " + batteryToFillPerc);
+            console.log("battery in kWh: " + (battery * batteryToFillPerc));
+            var minTime = (battery * batteryToFillPerc) / maxPower;
+            var maxTime = (battery * batteryToFillPerc) / minPower;
+            stationMarker.chargingTime = minTime.toFixed(1) + " - " + maxTime.toFixed(1) + " hours";
+            
+            optimalChargingStationPositions.push(stationMarker);
             remaningDistance += maxRange - totalLengthOfLastClosestStation;
           }
 
@@ -141,12 +152,12 @@ export default {
           totalLengthOfLastClosestStation = 0;
         }
 
-        console.log("ater latLng optimal latlng:");
+        console.log("after latLng optimal latlng:");
         console.log(optimalChargingStationPositions);
         this.totalRouteLength = totalLength;
         this.closestStation = {
           id: this.closestStation.id + 1,
-          stations: this.createLngLatArray(optimalChargingStationPositions),
+          stations: optimalChargingStationPositions,
         };
         console.log("ater latLng optimal latlng:");
         console.log(this.closestStation.stations);
@@ -213,20 +224,24 @@ export default {
         return this.icons.fuelIcon;
       }
     },
+    createJsonMarker(element){
+      var lon = element.geometry.coordinates[0];
+      var lat = element.geometry.coordinates[1];
+      var markerJson = {
+        name: element.properties.name,
+        properties: element.properties,
+        coordinates: L.latLng(lat, lon),
+        icon: this.conditionalIcon(element)
+      }
+      return markerJson;
+    },
     createLngLatArray(gjArray){
       this.latLngRestAreas = []
       var latLngArray = []
       console.log("before new loc");
 
       gjArray.forEach(element => {
-        var lon = element.geometry.coordinates[0];
-        var lat = element.geometry.coordinates[1];
-        var latLng = {
-          name: element.properties.name,
-          properties: element.properties,
-          coordinates: L.latLng(lat,lon),
-          icon: this.conditionalIcon(element)
-        }
+        var latLng = this.createJsonMarker(element);
         latLngArray.push(latLng);
       });
 
